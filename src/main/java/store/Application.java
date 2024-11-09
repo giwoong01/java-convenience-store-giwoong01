@@ -1,6 +1,7 @@
 package store;
 
 import store.controller.StoreController;
+import store.view.InputView;
 import store.view.OutputView;
 
 public class Application {
@@ -11,7 +12,10 @@ public class Application {
     }
 
     private static StoreController createStoreController() {
-        return new StoreController(new OutputView());
+        return new StoreController(
+                new InputView(),
+                new OutputView()
+        );
     }
 
 }

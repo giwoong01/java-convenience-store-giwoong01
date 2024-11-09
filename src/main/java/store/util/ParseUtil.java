@@ -1,6 +1,10 @@
 package store.util;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+import store.domain.OrderProduct;
 import store.domain.Product;
+import store.domain.Products;
 
 public class ParseUtil {
 
@@ -21,6 +25,31 @@ public class ParseUtil {
         String promotion = lineSplit[3].trim();
 
         return Product.createProduct(name, price, quantity, promotion);
+    }
+
+    public static OrderProduct parseOrderProduct(String input, Products products) {
+        try {
+            String[] inputSplit = input.replaceAll("[\\[\\]]", "").split(",");
+
+            return OrderProduct.createOrderProduct(initializeProduct(inputSplit), products);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new ArrayIndexOutOfBoundsException("[ERROR] 올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요.");
+        }
+    }
+
+    private static Map<String, Integer> initializeProduct(String[] inputSplit) {
+        Map<String, Integer> productNamesAndQuantity = new LinkedHashMap<>();
+
+        for (String productNameAndQuantity : inputSplit) {
+            addProduct(productNamesAndQuantity, productNameAndQuantity);
+        }
+
+        return productNamesAndQuantity;
+    }
+
+    private static void addProduct(Map<String, Integer> productNamesAndQuantity, String productNameAndQuantity) {
+        String[] productNameAndQuantitySplit = productNameAndQuantity.split("-");
+        productNamesAndQuantity.put(productNameAndQuantitySplit[0], parseInt(productNameAndQuantitySplit[1]));
     }
 
 }
