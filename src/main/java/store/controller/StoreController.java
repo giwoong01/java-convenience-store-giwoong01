@@ -1,7 +1,9 @@
 package store.controller;
 
 import store.domain.OrderProduct;
+import store.domain.PaymentSystem;
 import store.domain.Products;
+import store.domain.Promotions;
 import store.util.FileUtil;
 import store.util.RetryUtil;
 import store.view.InputView;
@@ -21,7 +23,7 @@ public class StoreController {
         Products products = getProducts();
         printProducts(products);
 
-        OrderProduct orderProduct = RetryUtil.orderProduct(inputView, outputView, products);
+        PaymentSystem paymentSystem = new PaymentSystem(products, getOrderProduct(products), getPromotions());
 
     }
 
@@ -32,6 +34,14 @@ public class StoreController {
     private void printProducts(Products products) {
         outputView.printIntroduction();
         outputView.printProducts(products.toProductsDto());
+    }
+
+    private OrderProduct getOrderProduct(Products products) {
+        return RetryUtil.orderProduct(inputView, outputView, products);
+    }
+
+    private Promotions getPromotions() {
+        return FileUtil.loadPromotionsFromFile();
     }
 
 }

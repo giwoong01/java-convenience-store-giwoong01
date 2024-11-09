@@ -5,6 +5,7 @@ import java.util.Map;
 import store.domain.OrderProduct;
 import store.domain.Product;
 import store.domain.Products;
+import store.domain.Promotion;
 
 public class ParseUtil {
 
@@ -50,6 +51,18 @@ public class ParseUtil {
     private static void addProduct(Map<String, Integer> productNamesAndQuantity, String productNameAndQuantity) {
         String[] productNameAndQuantitySplit = productNameAndQuantity.split("-");
         productNamesAndQuantity.put(productNameAndQuantitySplit[0], parseInt(productNameAndQuantitySplit[1]));
+    }
+
+    public static Promotion parsePromotionFromLine(String line) {
+        String[] lineSplit = line.split(",");
+
+        String name = lineSplit[0].trim();
+        String buy = lineSplit[1].trim();
+        String get = lineSplit[2].trim();
+        String start_date = lineSplit[3].trim();
+        String end_date = lineSplit[4].trim();
+
+        return Promotion.createPromotion(name, buy, get, start_date, end_date);
     }
 
 }
