@@ -46,4 +46,12 @@ public class OrderProduct {
         return new OrderProduct(orderProduct, products);
     }
 
+    public List<String> getOrderProductNames() {
+        return orderProduct.keySet().stream().toList();
+    }
+
+    public int getOrderProductQuantity(String orderProductName) {
+        return orderProduct.get(orderProductName);
+    }
+
 }

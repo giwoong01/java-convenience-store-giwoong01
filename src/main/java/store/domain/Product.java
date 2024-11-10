@@ -7,7 +7,7 @@ public class Product {
 
     private final String name;
     private final int price;
-    private final String quantity;
+    private String quantity;
     private final String promotion;
 
     public Product(String name, int price, String quantity, String promotion) {
@@ -28,6 +28,17 @@ public class Product {
                 quantity,
                 promotion
         );
+    }
+
+    public void updateQuantity(int quantityToSubtract) {
+        int tmpQuantity = ParseUtil.parseInt(this.quantity);
+        tmpQuantity -= quantityToSubtract;
+        if (tmpQuantity <= 0) {
+            this.quantity = "재고 없음";
+            return;
+        }
+
+        this.quantity = Integer.toString(tmpQuantity);
     }
 
     public String getName() {
