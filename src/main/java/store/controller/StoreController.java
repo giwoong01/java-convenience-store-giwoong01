@@ -120,7 +120,7 @@ public class StoreController {
             }
 
             if (userConfirmNonPromotionalPurchase.equalsIgnoreCase("N")) {
-                paymentSystem.NBasicPayment(productName, orderProductQuantity);
+                paymentSystem.NBasicPayment(productName, orderProductQuantity, updatedQuantity);
             }
         }
 

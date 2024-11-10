@@ -84,8 +84,8 @@ public class PaymentSystem {
         products.updateProductQuantity(orderProductName, remainOrderProductQuantity);
     }
 
-    public void NBasicPayment(String orderProductName, int remainOrderProductQuantity) {
-        int adjustedQuantity = remainOrderProductQuantity - 1;
+    public void NBasicPayment(String orderProductName, int remainOrderProductQuantity, int updateQuantity) {
+        int adjustedQuantity = remainOrderProductQuantity - updateQuantity;
         orderProduct.updateOrderProductQuantity(orderProductName, adjustedQuantity);
     }
 
