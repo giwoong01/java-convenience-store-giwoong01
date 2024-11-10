@@ -1,17 +1,32 @@
 package store.domain;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import store.util.ParseUtil;
 import store.validator.OrderProductValidator;
 
 public class OrderProduct {
 
     private final Map<String, Integer> orderProduct;
+    private final Map<String, Integer> freePromotionProducts = new HashMap<>();
 
     public OrderProduct(Map<String, Integer> orderProduct, Products products) {
         validateOrderProduct(orderProduct, products);
         this.orderProduct = orderProduct;
+    }
+
+    public void addFreePromotionProduct(String productName, int quantity) {
+        freePromotionProducts.put(productName, freePromotionProducts.getOrDefault(productName, 0) + quantity);
+    }
+
+    public int getFreePromotionProductQuantity(String productName) {
+        return freePromotionProducts.getOrDefault(productName, 0);
+    }
+
+    public Set<String> getFreePromotionProductNames() {
+        return freePromotionProducts.keySet();
     }
 
     private void validateOrderProduct(Map<String, Integer> orderProduct, Products products) {

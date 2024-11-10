@@ -102,7 +102,7 @@ public class StoreController {
                                     int promotionDiscount,
                                     int membershipDiscount, int totalResult, int discountResult) {
         // 영수증 헤더
-        System.out.println("==============W 편의점================");
+        System.out.println("\n==============W 편의점================");
         System.out.println("상품명\t\t수량\t금액");
 
         // 상품 출력
@@ -110,11 +110,13 @@ public class StoreController {
 
         for (String name : orderProductNames) {
             int orderProductQuantity = orderProduct.getOrderProductQuantity(name);
+            int freePromotionQuantity = orderProduct.getFreePromotionProductQuantity(name);
+            int totalQuantity = orderProductQuantity + freePromotionQuantity;
             int price = products.findApplicablePrice(name);
             System.out.printf("%s\t\t%d\t%,d\n",
                     name,
-                    orderProductQuantity,
-                    price * orderProductQuantity);  // 가격은 가격 * 수량
+                    totalQuantity,
+                    price * totalQuantity);  // 가격은 가격 * 총 수량
         }
 
         // 행사 할인 출력

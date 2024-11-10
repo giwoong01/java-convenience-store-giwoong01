@@ -54,7 +54,9 @@ public class PaymentSystem {
         Integer productPrice = products.findApplicablePrice(orderProductName);
         totalResult += ((remainOrderProductQuantity + promotionFreeQuantity) * productPrice);
         discountResult += (remainOrderProductQuantity * productPrice);
+        freePromotionProducts.add(orderProductName);
         products.updateProductQuantity(orderProductName, remainOrderProductQuantity + promotionFreeQuantity);
+        orderProduct.addFreePromotionProduct(orderProductName, promotionFreeQuantity);
     }
 
     public void basicPayment(String orderProductName, int remainOrderProductQuantity) {

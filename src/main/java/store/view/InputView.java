@@ -30,7 +30,9 @@ public class InputView {
 
     public String inputMoreProducts() {
         System.out.println("\n감사합니다. 구매하고 싶은 다른 상품이 있나요? (Y/N)");
-        return Console.readLine().trim();
+        String input = Console.readLine().trim();
+        System.out.println();
+        return input;
     }
 
 }
