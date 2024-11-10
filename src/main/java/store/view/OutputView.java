@@ -34,11 +34,12 @@ public class OutputView {
                              int totalResult,
                              int promotionDiscount,
                              int membershipDiscount,
-                             int discountResult) {
+                             int discountResult,
+                             int totalQuantity) {
         printReceiptHeader();
         printOrderProducts(orderProductDetails);
         printPromotionDiscounts(promotionDetails);
-        printReceiptFooter(totalResult, promotionDiscount, membershipDiscount, discountResult);
+        printReceiptFooter(totalResult, promotionDiscount, membershipDiscount, discountResult, totalQuantity);
     }
 
     private void printReceiptHeader() {
@@ -65,9 +66,10 @@ public class OutputView {
     private void printReceiptFooter(int totalResult,
                                     int promotionDiscount,
                                     int membershipDiscount,
-                                    int discountResult) {
+                                    int discountResult,
+                                    int totalQuantity) {
         System.out.println("==================================");
-        System.out.printf("총구매액\t\t\t%,d\n", totalResult);
+        System.out.printf("총구매액\t\t%d\t%,d\n", totalQuantity, totalResult);
         System.out.printf("행사할인\t\t\t-%,d\n", promotionDiscount);
         System.out.printf("멤버십할인\t\t\t-%,d\n", membershipDiscount);
         System.out.printf("내실돈\t\t\t\t %,d\n", discountResult - membershipDiscount);

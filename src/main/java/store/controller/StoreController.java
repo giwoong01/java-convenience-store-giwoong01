@@ -9,6 +9,7 @@ import store.domain.PaymentSystem;
 import store.domain.Products;
 import store.domain.Promotions;
 import store.domain.ReceiptIssuer;
+import store.dto.OrderProductDto;
 import store.util.FileUtil;
 import store.util.RetryUtil;
 import store.view.InputView;
@@ -133,13 +134,15 @@ public class StoreController {
                               Products products,
                               PaymentSystem paymentSystem,
                               int membershipDiscount) {
+        List<OrderProductDto> orderProductDetails = ReceiptIssuer.getOrderProductDetails(orderProduct, products);
         outputView.printReceipt(
-                ReceiptIssuer.getOrderProductDetails(orderProduct, products),
+                orderProductDetails,
                 ReceiptIssuer.getPromotionDetails(paymentSystem),
                 paymentSystem.getTotalResult(),
                 paymentSystem.getTotalResult() - paymentSystem.getDiscountResult(),
                 membershipDiscount,
-                paymentSystem.getDiscountResult());
+                paymentSystem.getDiscountResult(),
+                ReceiptIssuer.getTotalQuantity(orderProductDetails));
     }
 
 }

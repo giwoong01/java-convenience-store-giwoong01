@@ -31,4 +31,9 @@ public class ReceiptIssuer {
 
         return promotionDetails;
     }
+
+    public static int getTotalQuantity(List<OrderProductDto> orderProductDetails) {
+        return orderProductDetails.stream().mapToInt(OrderProductDto::totalQuantity).sum();
+    }
+
 }
