@@ -11,6 +11,7 @@ import store.domain.Promotions;
 import store.domain.ReceiptIssuer;
 import store.dto.OrderProductDto;
 import store.util.FileUtil;
+import store.util.ParseUtil;
 import store.util.RetryUtil;
 import store.view.InputView;
 import store.view.OutputView;
@@ -84,8 +85,10 @@ public class StoreController {
         String promotion = products.findApplicablePromotion(productName);
         int requiredBuyQuantity = promotions.getPromotionBuyRequirement(promotion);
         int freeQuantity = promotions.getPromotionFreeQuantity(promotion);
+        int productQuantity = ParseUtil.parseInt(products.getProductQuantity(productName));
 
-        if (paymentSystem.isEligibleForFreePromotion(orderQuantity, requiredBuyQuantity, freeQuantity)) {
+        if (paymentSystem.isEligibleForFreePromotion(orderQuantity, productQuantity, requiredBuyQuantity,
+                freeQuantity)) {
             String userFreePromotionChoice =
                     RetryUtil.freePromotionChoice(inputView, outputView, productName, freeQuantity);
             if (userFreePromotionChoice.equalsIgnoreCase("Y")) {
@@ -98,7 +101,8 @@ public class StoreController {
 
         }
 
-        if (!paymentSystem.isEligibleForFreePromotion(orderQuantity, requiredBuyQuantity, freeQuantity)) {
+        if (!paymentSystem.isEligibleForFreePromotion(orderQuantity, productQuantity, requiredBuyQuantity,
+                freeQuantity)) {
             applyPromotionDiscount(orderProduct, paymentSystem, productName);
         }
     }

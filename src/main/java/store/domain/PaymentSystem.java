@@ -69,7 +69,6 @@ public class PaymentSystem {
 
     public void NFreePromotionPayment(String orderProductName,
                                       int remainOrderProductQuantity) {
-        System.out.println(remainOrderProductQuantity);
         Integer productPrice = products.findApplicablePrice(orderProductName);
         totalResult += (remainOrderProductQuantity * productPrice);
         discountResult += (remainOrderProductQuantity * productPrice);
@@ -100,10 +99,12 @@ public class PaymentSystem {
     }
 
     public boolean isEligibleForFreePromotion(int orderProductQuantity,
+                                              int productQuantity,
                                               int requiredBuyQuantity,
                                               int promotionFreeQuantity) {
         return orderProductQuantity < requiredBuyQuantity + promotionFreeQuantity
-                && orderProductQuantity == requiredBuyQuantity;
+                && orderProductQuantity == requiredBuyQuantity
+                && productQuantity != orderProductQuantity;
     }
 
     public int applyMembershipDiscount() {
