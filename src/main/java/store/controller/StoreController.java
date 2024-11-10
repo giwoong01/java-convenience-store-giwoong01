@@ -11,7 +11,6 @@ import store.domain.Promotions;
 import store.domain.ReceiptIssuer;
 import store.dto.OrderProductDto;
 import store.util.FileUtil;
-import store.util.ParseUtil;
 import store.util.RetryUtil;
 import store.view.InputView;
 import store.view.OutputView;
@@ -100,12 +99,13 @@ public class StoreController {
         }
 
         if (!paymentSystem.isEligibleForFreePromotion(orderQuantity, requiredBuyQuantity, freeQuantity)) {
-            applyPromotionDiscount(products, paymentSystem, productName);
+            applyPromotionDiscount(orderProduct, paymentSystem, productName);
         }
     }
 
-    private void applyPromotionDiscount(Products products, PaymentSystem paymentSystem, String productName) {
-        int orderProductQuantity = ParseUtil.parseInt(products.getProductQuantity(productName));
+    private void applyPromotionDiscount(OrderProduct orderProduct, PaymentSystem paymentSystem,
+                                        String productName) {
+        int orderProductQuantity = orderProduct.getOrderProductQuantity(productName);
         int updatedQuantity = paymentSystem.applyPromotionPayment(productName);
 
         if (paymentSystem.isOrderProductQuantity(updatedQuantity)) {
