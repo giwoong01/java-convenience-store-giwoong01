@@ -85,8 +85,10 @@ public class StoreController {
         int requiredBuyQuantity = promotions.getPromotionBuyRequirement(promotion);
         int freeQuantity = promotions.getPromotionFreeQuantity(promotion);
 
-        if (isEligibleForFreePromotion(paymentSystem, productName, orderQuantity, requiredBuyQuantity, freeQuantity)) {
-            applyFreePromotion(paymentSystem, productName, remainingQuantity, freeQuantity);
+        if (paymentSystem.isEligibleForFreePromotion(orderQuantity, requiredBuyQuantity, freeQuantity)) {
+            String userFreePromotionChoice =
+                    RetryUtil.freePromotionChoice(inputView, outputView, productName, freeQuantity);
+            applyFreePromotion(paymentSystem, productName, remainingQuantity, freeQuantity, userFreePromotionChoice);
         }
 
         if (!paymentSystem.isEligibleForFreePromotion(orderQuantity, requiredBuyQuantity, freeQuantity)) {
@@ -94,37 +96,28 @@ public class StoreController {
         }
     }
 
-    private boolean isEligibleForFreePromotion(PaymentSystem paymentSystem, String productName, int orderQuantity,
-                                               int requiredBuyQuantity, int freeQuantity) {
-        return paymentSystem.isEligibleForFreePromotion(orderQuantity, requiredBuyQuantity, freeQuantity) &&
-                RetryUtil.freePromotionChoice(inputView, outputView, productName, freeQuantity);
-    }
-
     private void applyFreePromotion(PaymentSystem paymentSystem, String productName, int remainingQuantity,
-                                    int freeQuantity) {
-        paymentSystem.freePromotionPayment(productName, remainingQuantity, freeQuantity);
+                                    int freeQuantity, String userFreePromotionChoice) {
+        paymentSystem.freePromotionPayment(productName, remainingQuantity, freeQuantity, userFreePromotionChoice);
     }
 
     private void applyPromotionDiscount(PaymentSystem paymentSystem, String productName) {
-        int updatedQuantity = paymentSystem.applyPromotionDiscount(productName);
+        int updatedQuantity = paymentSystem.applyPromotionPayment(productName);
 
-        if (shouldConfirmNonPromotionalPurchase(paymentSystem, productName, updatedQuantity)) {
-            paymentSystem.basicPayment(productName, updatedQuantity);
+        if (paymentSystem.isOrderProductQuantity(updatedQuantity)) {
+            String userConfirmNonPromotionalPurchase =
+                    RetryUtil.confirmNonPromotionalPurchase(inputView, outputView, productName, updatedQuantity);
+            paymentSystem.basicPayment(productName, updatedQuantity, userConfirmNonPromotionalPurchase);
         }
     }
 
-    private boolean shouldConfirmNonPromotionalPurchase(PaymentSystem paymentSystem, String productName,
-                                                        int updatedQuantity) {
-        return paymentSystem.isOrderProductQuantity(updatedQuantity) &&
-                RetryUtil.confirmNonPromotionalPurchase(inputView, outputView, productName, updatedQuantity);
-    }
-
     private void handleNonPromotionalProduct(PaymentSystem paymentSystem, String productName, int remainingQuantity) {
-        paymentSystem.basicPayment(productName, remainingQuantity);
+        paymentSystem.nonPromotionPayment(productName, remainingQuantity);
     }
 
     private int applyMembershipDiscountIfEligible(PaymentSystem paymentSystem) {
-        if (RetryUtil.membershipDiscountChoice(inputView, outputView)) {
+        String userMembershipDiscountChoice = RetryUtil.membershipDiscountChoice(inputView, outputView);
+        if (userMembershipDiscountChoice.equalsIgnoreCase("Y")) {
             return paymentSystem.applyMembershipDiscount();
         }
         return 0;
@@ -136,7 +129,7 @@ public class StoreController {
                               int membershipDiscount) {
         List<OrderProductDto> orderProductDetails = ReceiptIssuer.getOrderProductDetails(orderProduct, products);
         outputView.printReceipt(
-                orderProductDetails,
+                ReceiptIssuer.getOrderProductDetails(orderProduct, products),
                 ReceiptIssuer.getPromotionDetails(paymentSystem),
                 paymentSystem.getTotalResult(),
                 paymentSystem.getTotalResult() - paymentSystem.getDiscountResult(),

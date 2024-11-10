@@ -25,7 +25,7 @@ public class PaymentSystem {
         this.membershipResult = 0;
     }
 
-    public int applyPromotionDiscount(String orderProductName) {
+    public int applyPromotionPayment(String orderProductName) {
         int orderProductQuantity = orderProduct.getOrderProductQuantity(orderProductName);
         Integer productPrice = products.findApplicablePrice(orderProductName);
         String productPromotion = products.findApplicablePromotion(orderProductName);
@@ -48,23 +48,37 @@ public class PaymentSystem {
         return orderProductQuantity;
     }
 
-    public void freePromotionPayment(String orderProductName,
-                                     int remainOrderProductQuantity,
-                                     int promotionFreeQuantity) {
-        Integer productPrice = products.findApplicablePrice(orderProductName);
-        totalResult += ((remainOrderProductQuantity + promotionFreeQuantity) * productPrice);
-        discountResult += (remainOrderProductQuantity * productPrice);
-        freePromotionProducts.merge(orderProductName, promotionFreeQuantity, Integer::sum);
-        products.updateProductQuantity(orderProductName, remainOrderProductQuantity + promotionFreeQuantity);
-        orderProduct.addFreePromotionProduct(orderProductName, promotionFreeQuantity);
-    }
-
-    public void basicPayment(String orderProductName, int remainOrderProductQuantity) {
+    public void nonPromotionPayment(String orderProductName, int remainOrderProductQuantity) {
         Integer productPrice = products.findApplicablePrice(orderProductName);
         totalResult += (remainOrderProductQuantity * productPrice);
         membershipResult += (remainOrderProductQuantity * productPrice);
         discountResult += (remainOrderProductQuantity * productPrice);
         products.updateProductQuantity(orderProductName, remainOrderProductQuantity);
+    }
+
+    public void freePromotionPayment(String orderProductName,
+                                     int remainOrderProductQuantity,
+                                     int promotionFreeQuantity,
+                                     String userFreePromotionChoice) {
+        if (userFreePromotionChoice.equalsIgnoreCase("Y")) {
+            Integer productPrice = products.findApplicablePrice(orderProductName);
+            totalResult += ((remainOrderProductQuantity + promotionFreeQuantity) * productPrice);
+            discountResult += (remainOrderProductQuantity * productPrice);
+            freePromotionProducts.merge(orderProductName, promotionFreeQuantity, Integer::sum);
+            products.updateProductQuantity(orderProductName, remainOrderProductQuantity + promotionFreeQuantity);
+            orderProduct.addFreePromotionProduct(orderProductName, promotionFreeQuantity);
+        }
+    }
+
+    public void basicPayment(String orderProductName, int remainOrderProductQuantity,
+                             String userConfirmNonPromotionalPurchase) {
+        if (userConfirmNonPromotionalPurchase.equalsIgnoreCase("Y")) {
+            Integer productPrice = products.findApplicablePrice(orderProductName);
+            totalResult += (remainOrderProductQuantity * productPrice);
+            membershipResult += (remainOrderProductQuantity * productPrice);
+            discountResult += (remainOrderProductQuantity * productPrice);
+            products.updateProductQuantity(orderProductName, remainOrderProductQuantity);
+        }
     }
 
     public boolean isPromotionsApplicable(String orderProductName, LocalDateTime currentDate) {

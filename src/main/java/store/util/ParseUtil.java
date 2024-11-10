@@ -2,7 +2,9 @@ package store.util;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import store.domain.OrderProduct;
 import store.domain.Product;
@@ -31,28 +33,34 @@ public class ParseUtil {
     }
 
     public static OrderProduct parseOrderProduct(String input, Products products) {
-        try {
-            String[] inputSplit = input.replaceAll("[\\[\\]]", "").split(",", -1);
+        String[] inputSplit = input.split(",", -1);
 
-            return OrderProduct.createOrderProduct(initializeProduct(inputSplit), products);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            throw new ArrayIndexOutOfBoundsException("[ERROR] 올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요.");
+        List<String[]> orderProductDetails = new ArrayList<>();
+        for (String item : inputSplit) {
+            if (!item.matches("^\\[[^\\[\\]]+-\\d+]$")) {
+                throw new IllegalArgumentException("[ERROR] 올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요.");
+            }
+
+            String[] productDetails = item.replaceAll("[\\[\\]]", "").split("-", 2);
+            orderProductDetails.add(productDetails);
         }
+
+        return OrderProduct.createOrderProduct(initializeProduct(orderProductDetails), products);
     }
 
-    private static Map<String, Integer> initializeProduct(String[] inputSplit) {
+    private static Map<String, Integer> initializeProduct(List<String[]> orderProductDetails) {
         Map<String, Integer> productNamesAndQuantity = new LinkedHashMap<>();
 
-        for (String productNameAndQuantity : inputSplit) {
-            addProduct(productNamesAndQuantity, productNameAndQuantity);
+        for (String[] productDetail : orderProductDetails) {
+            addProduct(productNamesAndQuantity, productDetail);
         }
 
         return productNamesAndQuantity;
     }
 
-    private static void addProduct(Map<String, Integer> productNamesAndQuantity, String productNameAndQuantity) {
-        String[] productNameAndQuantitySplit = productNameAndQuantity.split("-", 2);
-        productNamesAndQuantity.put(productNameAndQuantitySplit[0], parseInt(productNameAndQuantitySplit[1]));
+    private static void addProduct(Map<String, Integer> productNamesAndQuantity, String[] productNameAndQuantity) {
+        System.out.println(productNameAndQuantity[0] + ":" + parseInt(productNameAndQuantity[1]));
+        productNamesAndQuantity.put(productNameAndQuantity[0], parseInt(productNameAndQuantity[1]));
     }
 
     public static Promotion parsePromotionFromLine(String line) {
