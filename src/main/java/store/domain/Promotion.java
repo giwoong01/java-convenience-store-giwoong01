@@ -38,8 +38,9 @@ public class Promotion {
         return name.equals(productPromotion);
     }
 
-    private boolean isDateAndQuantityValid(LocalDateTime currentDate) {
-        return !currentDate.isBefore(startDate.atStartOfDay()) && !currentDate.isAfter(endDate.atStartOfDay());
+    public boolean isDateAndQuantityValid(LocalDateTime currentDate) {
+        LocalDate currentLocalDate = currentDate.toLocalDate();
+        return !currentLocalDate.isBefore(startDate) && !currentLocalDate.isAfter(endDate);
     }
 
     public String getName() {

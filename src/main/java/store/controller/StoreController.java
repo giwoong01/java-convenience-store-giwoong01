@@ -7,6 +7,7 @@ import store.domain.OrderProduct;
 import store.domain.PaymentSystem;
 import store.domain.Products;
 import store.domain.Promotions;
+import store.domain.ReceiptIssuer;
 import store.util.FileUtil;
 import store.util.RetryUtil;
 import store.view.InputView;
@@ -83,55 +84,9 @@ public class StoreController {
                 membershipDiscount = paymentSystem.applyMembershipDiscount();
             }
 
-            // 영수증 출력
-            printReceipt(orderProduct,
-                    products,
-                    promotions,
-                    paymentSystem,
-                    paymentSystem.getTotalResult() - paymentSystem.getDiscountResult(),
-                    membershipDiscount,
-                    paymentSystem.getTotalResult(),
-                    paymentSystem.getDiscountResult());
-
+            printReceipt(orderProduct, products, paymentSystem, promotions, membershipDiscount);
         } while (RetryUtil.moreProducts(inputView, outputView));
 
-    }
-
-    public static void printReceipt(OrderProduct orderProduct, Products products, Promotions promotions,
-                                    PaymentSystem paymentSystem,
-                                    int promotionDiscount,
-                                    int membershipDiscount, int totalResult, int discountResult) {
-        // 영수증 헤더
-        System.out.println("\n==============W 편의점================");
-        System.out.println("상품명\t\t수량\t금액");
-
-        // 상품 출력
-        List<String> orderProductNames = orderProduct.getOrderProductNames();
-
-        for (String name : orderProductNames) {
-            int orderProductQuantity = orderProduct.getOrderProductQuantity(name);
-            int freePromotionQuantity = orderProduct.getFreePromotionProductQuantity(name);
-            int totalQuantity = orderProductQuantity + freePromotionQuantity;
-            int price = products.findApplicablePrice(name);
-            System.out.printf("%s\t\t%d\t%,d\n",
-                    name,
-                    totalQuantity,
-                    price * totalQuantity);  // 가격은 가격 * 총 수량
-        }
-
-        // 행사 할인 출력
-        System.out.println("=============증\t정===============");
-        for (String name : paymentSystem.getFreePromotionProducts()) {
-            System.out.printf("%s\t\t%d\n", name,
-                    promotions.getPromotionFreeQuantity(products.findApplicablePromotion(name)));
-        }
-
-        // 멤버십 할인 내역 출력
-        System.out.println("==================================");
-        System.out.printf("총구매액\t\t\t%,d\n", totalResult);
-        System.out.printf("행사할인\t\t\t-%,d\n", promotionDiscount);
-        System.out.printf("멤버십할인\t\t\t-%,d\n", membershipDiscount);
-        System.out.printf("내실돈\t\t\t\t %,d\n", discountResult - membershipDiscount);
     }
 
     private Products getProducts() {
@@ -149,6 +104,20 @@ public class StoreController {
 
     private Promotions getPromotions() {
         return FileUtil.loadPromotionsFromFile();
+    }
+
+    private void printReceipt(OrderProduct orderProduct,
+                              Products products,
+                              PaymentSystem paymentSystem,
+                              Promotions promotions,
+                              int membershipDiscount) {
+        outputView.printReceipt(
+                ReceiptIssuer.getOrderProductDetails(orderProduct, products),
+                ReceiptIssuer.getPromotionDetails(paymentSystem, promotions, products),
+                paymentSystem.getTotalResult(),
+                paymentSystem.getTotalResult() - paymentSystem.getDiscountResult(),
+                membershipDiscount,
+                paymentSystem.getDiscountResult());
     }
 
 }
