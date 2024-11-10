@@ -57,5 +57,15 @@ public class RetryUtil {
         }
     }
 
+    public static boolean moreProducts(InputView inputView, OutputView outputView) {
+        try {
+            String input = inputView.inputMoreProducts();
+            InputValidator.validateYesNoInput(input);
+            return input.equalsIgnoreCase("Y");
+        } catch (IllegalArgumentException e) {
+            outputView.printErrorMessage(e.getMessage());
+            return moreProducts(inputView, outputView);
+        }
+    }
 
 }
