@@ -1,6 +1,7 @@
 package store.controller;
 
-import java.time.LocalDate;
+import camp.nextstep.edu.missionutils.DateTimes;
+import java.time.LocalDateTime;
 import java.util.List;
 import store.domain.OrderProduct;
 import store.domain.PaymentSystem;
@@ -23,17 +24,17 @@ public class StoreController {
 
     public void start() {
         Products products = getProducts();
-        
+        Promotions promotions = getPromotions();
+
         do {
             printProducts(products);
 
             // 이 아래부터 코드 정리
             OrderProduct orderProduct = getOrderProduct(products);
-            Promotions promotions = getPromotions();
             PaymentSystem paymentSystem = new PaymentSystem(products, orderProduct, promotions);
 
             List<String> orderProductNames = orderProduct.getOrderProductNames();
-            LocalDate currentDate = LocalDate.now();
+            LocalDateTime currentDate = DateTimes.now();
 
             for (String orderProductName : orderProductNames) {
                 int remainOrderProductQuantity = orderProduct.getOrderProductQuantity(orderProductName);

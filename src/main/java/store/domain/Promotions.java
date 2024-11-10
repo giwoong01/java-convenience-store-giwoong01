@@ -1,6 +1,6 @@
 package store.domain;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class Promotions {
@@ -11,7 +11,7 @@ public class Promotions {
         this.promotions = promotions;
     }
 
-    public boolean isPromotionsApplicable(String productPromotion, LocalDate currentDate) {
+    public boolean isPromotionsApplicable(String productPromotion, LocalDateTime currentDate) {
         return promotions.stream()
                 .anyMatch(promotion -> promotion.isPromotionApplicable(productPromotion, currentDate));
     }

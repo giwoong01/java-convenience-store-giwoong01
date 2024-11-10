@@ -1,6 +1,7 @@
 package store.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Promotion {
 
@@ -29,7 +30,7 @@ public class Promotion {
                 endDate);
     }
 
-    public boolean isPromotionApplicable(String productPromotion, LocalDate currentDate) {
+    public boolean isPromotionApplicable(String productPromotion, LocalDateTime currentDate) {
         return isNameMatching(productPromotion) && isDateAndQuantityValid(currentDate);
     }
 
@@ -37,8 +38,8 @@ public class Promotion {
         return name.equals(productPromotion);
     }
 
-    private boolean isDateAndQuantityValid(LocalDate currentDate) {
-        return !currentDate.isBefore(startDate) && !currentDate.isAfter(endDate);
+    private boolean isDateAndQuantityValid(LocalDateTime currentDate) {
+        return !currentDate.isBefore(startDate.atStartOfDay()) && !currentDate.isAfter(endDate.atStartOfDay());
     }
 
     public String getName() {
@@ -51,14 +52,6 @@ public class Promotion {
 
     public int getGet() {
         return get;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
     }
 
 }

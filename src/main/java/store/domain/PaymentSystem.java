@@ -1,6 +1,6 @@
 package store.domain;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import store.util.ParseUtil;
@@ -65,7 +65,7 @@ public class PaymentSystem {
         products.updateProductQuantity(orderProductName, remainOrderProductQuantity);
     }
 
-    public boolean isPromotionsApplicable(String orderProductName, LocalDate currentDate) {
+    public boolean isPromotionsApplicable(String orderProductName, LocalDateTime currentDate) {
         String productPromotion = products.findApplicablePromotion(orderProductName);
         return promotions.isPromotionsApplicable(productPromotion, currentDate);
     }
