@@ -32,7 +32,7 @@ public class ParseUtil {
 
     public static OrderProduct parseOrderProduct(String input, Products products) {
         try {
-            String[] inputSplit = input.replaceAll("[\\[\\]]", "").split(",");
+            String[] inputSplit = input.replaceAll("[\\[\\]]", "").split(",", -1);
 
             return OrderProduct.createOrderProduct(initializeProduct(inputSplit), products);
         } catch (ArrayIndexOutOfBoundsException e) {
@@ -51,7 +51,7 @@ public class ParseUtil {
     }
 
     private static void addProduct(Map<String, Integer> productNamesAndQuantity, String productNameAndQuantity) {
-        String[] productNameAndQuantitySplit = productNameAndQuantity.split("-");
+        String[] productNameAndQuantitySplit = productNameAndQuantity.split("-", 2);
         productNamesAndQuantity.put(productNameAndQuantitySplit[0], parseInt(productNameAndQuantitySplit[1]));
     }
 
