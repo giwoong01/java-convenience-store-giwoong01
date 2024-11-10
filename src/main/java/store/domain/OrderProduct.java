@@ -3,7 +3,6 @@ package store.domain;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import store.util.ParseUtil;
 import store.validator.OrderProductValidator;
 
@@ -25,10 +24,6 @@ public class OrderProduct {
         return freePromotionProducts.getOrDefault(productName, 0);
     }
 
-    public Set<String> getFreePromotionProductNames() {
-        return freePromotionProducts.keySet();
-    }
-
     private void validateOrderProduct(Map<String, Integer> orderProduct, Products products) {
         for (String orderProductName : orderProduct.keySet()) {
             OrderProductValidator.validateProductExists(orderProductName, getProductNames(products));
@@ -37,6 +32,10 @@ public class OrderProduct {
                     getProductQuantity(orderProductName, products)
             );
         }
+    }
+
+    public void updateOrderProductQuantity(String productName, int quantity) {
+        orderProduct.put(productName, quantity);
     }
 
     private List<String> getProductNames(Products products) {

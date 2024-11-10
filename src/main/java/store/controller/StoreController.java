@@ -11,6 +11,7 @@ import store.domain.Promotions;
 import store.domain.ReceiptIssuer;
 import store.dto.OrderProductDto;
 import store.util.FileUtil;
+import store.util.ParseUtil;
 import store.util.RetryUtil;
 import store.view.InputView;
 import store.view.OutputView;
@@ -88,27 +89,37 @@ public class StoreController {
         if (paymentSystem.isEligibleForFreePromotion(orderQuantity, requiredBuyQuantity, freeQuantity)) {
             String userFreePromotionChoice =
                     RetryUtil.freePromotionChoice(inputView, outputView, productName, freeQuantity);
-            applyFreePromotion(paymentSystem, productName, remainingQuantity, freeQuantity, userFreePromotionChoice);
+            if (userFreePromotionChoice.equalsIgnoreCase("Y")) {
+                paymentSystem.YFreePromotionPayment(productName, remainingQuantity, freeQuantity);
+            }
+
+            if (userFreePromotionChoice.equalsIgnoreCase("N")) {
+                paymentSystem.NFreePromotionPayment(productName, remainingQuantity);
+            }
+
         }
 
         if (!paymentSystem.isEligibleForFreePromotion(orderQuantity, requiredBuyQuantity, freeQuantity)) {
-            applyPromotionDiscount(paymentSystem, productName);
+            applyPromotionDiscount(products, paymentSystem, productName);
         }
     }
 
-    private void applyFreePromotion(PaymentSystem paymentSystem, String productName, int remainingQuantity,
-                                    int freeQuantity, String userFreePromotionChoice) {
-        paymentSystem.freePromotionPayment(productName, remainingQuantity, freeQuantity, userFreePromotionChoice);
-    }
-
-    private void applyPromotionDiscount(PaymentSystem paymentSystem, String productName) {
+    private void applyPromotionDiscount(Products products, PaymentSystem paymentSystem, String productName) {
+        int orderProductQuantity = ParseUtil.parseInt(products.getProductQuantity(productName));
         int updatedQuantity = paymentSystem.applyPromotionPayment(productName);
 
         if (paymentSystem.isOrderProductQuantity(updatedQuantity)) {
             String userConfirmNonPromotionalPurchase =
                     RetryUtil.confirmNonPromotionalPurchase(inputView, outputView, productName, updatedQuantity);
-            paymentSystem.basicPayment(productName, updatedQuantity, userConfirmNonPromotionalPurchase);
+            if (userConfirmNonPromotionalPurchase.equalsIgnoreCase("Y")) {
+                paymentSystem.YBasicPayment(productName, updatedQuantity);
+            }
+
+            if (userConfirmNonPromotionalPurchase.equalsIgnoreCase("N")) {
+                paymentSystem.NBasicPayment(productName, orderProductQuantity);
+            }
         }
+
     }
 
     private void handleNonPromotionalProduct(PaymentSystem paymentSystem, String productName, int remainingQuantity) {
