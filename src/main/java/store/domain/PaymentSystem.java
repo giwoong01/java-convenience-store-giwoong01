@@ -1,6 +1,8 @@
 package store.domain;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import store.util.ParseUtil;
 
 public class PaymentSystem {
@@ -11,6 +13,8 @@ public class PaymentSystem {
 
     private int totalResult;
     private int discountResult;
+    private int membershipResult;
+    private List<String> freePromotionProducts = new ArrayList<>();
 
     public PaymentSystem(Products products, OrderProduct orderProduct, Promotions promotions) {
         this.products = products;
@@ -18,14 +22,12 @@ public class PaymentSystem {
         this.promotions = promotions;
         this.totalResult = 0;
         this.discountResult = 0;
+        this.membershipResult = 0;
     }
 
     public int applyPromotionDiscount(String orderProductName) {
         int orderProductQuantity = orderProduct.getOrderProductQuantity(orderProductName);
         Integer productPrice = products.findApplicablePrice(orderProductName);
-
-        totalResult += (orderProductQuantity * productPrice);
-
         String productPromotion = products.findApplicablePromotion(orderProductName);
         Integer requiredBuyQuantity = promotions.getPromotionBuyRequirement(productPromotion);
         Integer promotionFreeQuantity = promotions.getPromotionFreeQuantity(productPromotion);
@@ -33,12 +35,15 @@ public class PaymentSystem {
 
         while (orderProductQuantity >= requiredBuyQuantity + promotionFreeQuantity
                 && productQuantity >= requiredBuyQuantity + promotionFreeQuantity) {
+            totalResult += ((requiredBuyQuantity + promotionFreeQuantity) * productPrice);
             discountResult += (requiredBuyQuantity * productPrice);
             products.updateProductQuantity(orderProductName, requiredBuyQuantity + promotionFreeQuantity);
 
             orderProductQuantity -= requiredBuyQuantity + promotionFreeQuantity;
             productQuantity -= requiredBuyQuantity + promotionFreeQuantity;
         }
+
+        freePromotionProducts.add(orderProductName);
 
         return orderProductQuantity;
     }
@@ -54,6 +59,8 @@ public class PaymentSystem {
 
     public void basicPayment(String orderProductName, int remainOrderProductQuantity) {
         Integer productPrice = products.findApplicablePrice(orderProductName);
+        totalResult += (remainOrderProductQuantity * productPrice);
+        membershipResult += (remainOrderProductQuantity * productPrice);
         discountResult += (remainOrderProductQuantity * productPrice);
         products.updateProductQuantity(orderProductName, remainOrderProductQuantity);
     }
@@ -74,14 +81,14 @@ public class PaymentSystem {
                 && orderProductQuantity == requiredBuyQuantity;
     }
 
-    public void applyMembershipDiscount() {
-        int membershipDiscount = (int) (discountResult * 0.30);
+    public int applyMembershipDiscount() {
+        int membershipDiscount = (int) (membershipResult * 0.30);
 
         if (membershipDiscount > 8000) {
             membershipDiscount = 8000;
         }
 
-        discountResult = discountResult - membershipDiscount;
+        return membershipDiscount;
     }
 
     public int getTotalResult() {
@@ -90,6 +97,10 @@ public class PaymentSystem {
 
     public int getDiscountResult() {
         return discountResult;
+    }
+
+    public List<String> getFreePromotionProducts() {
+        return freePromotionProducts;
     }
 
 }
