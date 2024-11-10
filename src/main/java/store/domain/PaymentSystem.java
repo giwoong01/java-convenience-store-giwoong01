@@ -109,7 +109,7 @@ public class PaymentSystem {
     }
 
     public BigDecimal applyMembershipDiscount() {
-        BigDecimal bigDecimal = BigDecimal.valueOf(membershipResult * 0.30);
+        BigDecimal bigDecimal = BigDecimal.valueOf(discountResult * 0.30);
         return bigDecimal.min(BigDecimal.valueOf(8000));
     }
 
