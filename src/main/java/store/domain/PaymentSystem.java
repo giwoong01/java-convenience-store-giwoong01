@@ -1,5 +1,6 @@
 package store.domain;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -107,9 +108,9 @@ public class PaymentSystem {
                 && productQuantity != orderProductQuantity;
     }
 
-    public int applyMembershipDiscount() {
-        int membershipDiscount = (int) (membershipResult * 0.30);
-        return Math.min(membershipDiscount, 8000);
+    public BigDecimal applyMembershipDiscount() {
+        BigDecimal bigDecimal = BigDecimal.valueOf(membershipResult * 0.30);
+        return bigDecimal.min(BigDecimal.valueOf(8000));
     }
 
     public int getTotalResult() {

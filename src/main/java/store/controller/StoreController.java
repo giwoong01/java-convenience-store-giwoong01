@@ -2,6 +2,7 @@ package store.controller;
 
 import camp.nextstep.edu.missionutils.Console;
 import camp.nextstep.edu.missionutils.DateTimes;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import store.domain.OrderProduct;
@@ -74,7 +75,7 @@ public class StoreController {
             }
         }
 
-        int membershipDiscount = applyMembershipDiscountIfEligible(paymentSystem);
+        BigDecimal membershipDiscount = applyMembershipDiscountIfEligible(paymentSystem);
         printReceipt(orderProduct, products, paymentSystem, membershipDiscount);
     }
 
@@ -130,18 +131,18 @@ public class StoreController {
         paymentSystem.nonPromotionPayment(productName, remainingQuantity);
     }
 
-    private int applyMembershipDiscountIfEligible(PaymentSystem paymentSystem) {
+    private BigDecimal applyMembershipDiscountIfEligible(PaymentSystem paymentSystem) {
         String userMembershipDiscountChoice = RetryUtil.membershipDiscountChoice(inputView, outputView);
         if (userMembershipDiscountChoice.equalsIgnoreCase("Y")) {
             return paymentSystem.applyMembershipDiscount();
         }
-        return 0;
+        return BigDecimal.ZERO;
     }
 
     private void printReceipt(OrderProduct orderProduct,
                               Products products,
                               PaymentSystem paymentSystem,
-                              int membershipDiscount) {
+                              BigDecimal membershipDiscount) {
         List<OrderProductDto> orderProductDetails = ReceiptIssuer.getOrderProductDetails(orderProduct, products);
         outputView.printReceipt(
                 ReceiptIssuer.getOrderProductDetails(orderProduct, products),

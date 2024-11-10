@@ -1,5 +1,7 @@
 package store.view;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
 import store.dto.OrderProductDto;
@@ -33,7 +35,7 @@ public class OutputView {
                              List<PromotionDto> promotionDetails,
                              int totalResult,
                              int promotionDiscount,
-                             int membershipDiscount,
+                             BigDecimal membershipDiscount,
                              int discountResult,
                              int totalQuantity) {
         printReceiptHeader();
@@ -65,14 +67,16 @@ public class OutputView {
 
     private void printReceiptFooter(int totalResult,
                                     int promotionDiscount,
-                                    int membershipDiscount,
+                                    BigDecimal membershipDiscount,
                                     int discountResult,
                                     int totalQuantity) {
+        DecimalFormat df = new DecimalFormat("#,###");
         System.out.println("==================================");
         System.out.printf("총구매액\t\t%d\t%,d\n", totalQuantity, totalResult);
         System.out.printf("행사할인\t\t\t-%,d\n", promotionDiscount);
-        System.out.printf("멤버십할인\t\t\t-%,d\n", membershipDiscount);
-        System.out.printf("내실돈\t\t\t\t %,d\n", discountResult - membershipDiscount);
+        System.out.printf("멤버십할인\t\t\t-%s\n", df.format(membershipDiscount));
+        System.out.printf("내실돈\t\t\t\t %s\n",
+                df.format(BigDecimal.valueOf(discountResult).subtract(membershipDiscount)));
     }
 
 }
