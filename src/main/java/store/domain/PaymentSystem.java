@@ -1,8 +1,8 @@
 package store.domain;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import store.util.ParseUtil;
 
 public class PaymentSystem {
@@ -14,7 +14,7 @@ public class PaymentSystem {
     private int totalResult;
     private int discountResult;
     private int membershipResult;
-    private List<String> freePromotionProducts = new ArrayList<>();
+    private Map<String, Integer> freePromotionProducts = new HashMap<>();
 
     public PaymentSystem(Products products, OrderProduct orderProduct, Promotions promotions) {
         this.products = products;
@@ -39,11 +39,11 @@ public class PaymentSystem {
             discountResult += (requiredBuyQuantity * productPrice);
             products.updateProductQuantity(orderProductName, requiredBuyQuantity + promotionFreeQuantity);
 
+            freePromotionProducts.merge(orderProductName, promotionFreeQuantity, Integer::sum);
+
             orderProductQuantity -= requiredBuyQuantity + promotionFreeQuantity;
             productQuantity -= requiredBuyQuantity + promotionFreeQuantity;
         }
-
-        freePromotionProducts.add(orderProductName);
 
         return orderProductQuantity;
     }
@@ -54,7 +54,7 @@ public class PaymentSystem {
         Integer productPrice = products.findApplicablePrice(orderProductName);
         totalResult += ((remainOrderProductQuantity + promotionFreeQuantity) * productPrice);
         discountResult += (remainOrderProductQuantity * productPrice);
-        freePromotionProducts.add(orderProductName);
+        freePromotionProducts.merge(orderProductName, promotionFreeQuantity, Integer::sum);
         products.updateProductQuantity(orderProductName, remainOrderProductQuantity + promotionFreeQuantity);
         orderProduct.addFreePromotionProduct(orderProductName, promotionFreeQuantity);
     }
@@ -85,12 +85,7 @@ public class PaymentSystem {
 
     public int applyMembershipDiscount() {
         int membershipDiscount = (int) (membershipResult * 0.30);
-
-        if (membershipDiscount > 8000) {
-            membershipDiscount = 8000;
-        }
-
-        return membershipDiscount;
+        return Math.min(membershipDiscount, 8000);
     }
 
     public int getTotalResult() {
@@ -101,7 +96,7 @@ public class PaymentSystem {
         return discountResult;
     }
 
-    public List<String> getFreePromotionProducts() {
+    public Map<String, Integer> getFreePromotionProducts() {
         return freePromotionProducts;
     }
 

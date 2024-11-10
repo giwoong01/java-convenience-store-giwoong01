@@ -22,12 +22,10 @@ public class ReceiptIssuer {
         return orderProductDetails;
     }
 
-    public static List<PromotionDto> getPromotionDetails(PaymentSystem paymentSystem,
-                                                         Promotions promotions,
-                                                         Products products) {
+    public static List<PromotionDto> getPromotionDetails(PaymentSystem paymentSystem) {
         List<PromotionDto> promotionDetails = new ArrayList<>();
-        for (String name : paymentSystem.getFreePromotionProducts()) {
-            int promotionFreeQuantity = promotions.getPromotionFreeQuantity(products.findApplicablePromotion(name));
+        for (String name : paymentSystem.getFreePromotionProducts().keySet()) {
+            Integer promotionFreeQuantity = paymentSystem.getFreePromotionProducts().get(name);
             promotionDetails.add(new PromotionDto(name, promotionFreeQuantity));
         }
 
