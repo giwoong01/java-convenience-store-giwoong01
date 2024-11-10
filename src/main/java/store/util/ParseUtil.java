@@ -59,7 +59,6 @@ public class ParseUtil {
     }
 
     private static void addProduct(Map<String, Integer> productNamesAndQuantity, String[] productNameAndQuantity) {
-        System.out.println(productNameAndQuantity[0] + ":" + parseInt(productNameAndQuantity[1]));
         productNamesAndQuantity.put(productNameAndQuantity[0], parseInt(productNameAndQuantity[1]));
     }
 
