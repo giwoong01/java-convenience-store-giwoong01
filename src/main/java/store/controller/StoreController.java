@@ -1,5 +1,6 @@
 package store.controller;
 
+import camp.nextstep.edu.missionutils.Console;
 import camp.nextstep.edu.missionutils.DateTimes;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -78,15 +79,11 @@ public class StoreController {
 
             }
 
-            // 멤버십 할인
-            int membershipDiscount = 0;
-            if (RetryUtil.membershipDiscountChoice(inputView, outputView)) {
-                membershipDiscount = paymentSystem.applyMembershipDiscount();
-            }
+            int membershipDiscount = applyMembershipDiscountIfEligible(paymentSystem);
 
             printReceipt(orderProduct, products, paymentSystem, promotions, membershipDiscount);
         } while (RetryUtil.moreProducts(inputView, outputView));
-
+        Console.close();
     }
 
     private Products getProducts() {
@@ -104,6 +101,13 @@ public class StoreController {
 
     private Promotions getPromotions() {
         return FileUtil.loadPromotionsFromFile();
+    }
+
+    private int applyMembershipDiscountIfEligible(PaymentSystem paymentSystem) {
+        if (RetryUtil.membershipDiscountChoice(inputView, outputView)) {
+            return paymentSystem.applyMembershipDiscount();
+        }
+        return 0;
     }
 
     private void printReceipt(OrderProduct orderProduct,
