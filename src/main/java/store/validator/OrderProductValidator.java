@@ -16,4 +16,10 @@ public class OrderProductValidator {
         }
     }
 
+    public static void validatePositiveStockQuantity(int orderProductQuantity) {
+        if (orderProductQuantity < 0) {
+            throw new IllegalArgumentException("[ERROR] 재고 수량은 음수가 될 수 없습니다. 다시 입력해 주세요.");
+        }
+    }
+
 }

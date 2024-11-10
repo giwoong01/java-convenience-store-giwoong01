@@ -31,6 +31,7 @@ public class OrderProduct {
                     orderProduct.get(orderProductName),
                     getProductQuantity(orderProductName, products)
             );
+            OrderProductValidator.validatePositiveStockQuantity(orderProduct.get(orderProductName));
         }
     }
 
