@@ -59,7 +59,10 @@ public class ParseUtil {
     }
 
     private static void addProduct(Map<String, Integer> productNamesAndQuantity, String[] productNameAndQuantity) {
-        productNamesAndQuantity.put(productNameAndQuantity[0], parseInt(productNameAndQuantity[1]));
+        String productName = productNameAndQuantity[0];
+        int quantity = Integer.parseInt(productNameAndQuantity[1]);
+
+        productNamesAndQuantity.merge(productName, quantity, Integer::sum);
     }
 
     public static Promotion parsePromotionFromLine(String line) {
