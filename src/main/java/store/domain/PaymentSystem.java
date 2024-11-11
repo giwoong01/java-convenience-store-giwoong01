@@ -76,6 +76,15 @@ public class PaymentSystem {
         products.updateProductQuantity(orderProductName, remainOrderProductQuantity);
     }
 
+    public void basicPayment(String orderProductName, int remainOrderProductQuantity) {
+        Integer productPrice = products.findApplicablePrice(orderProductName);
+
+        totalResult += (remainOrderProductQuantity * productPrice);
+        membershipResult += (remainOrderProductQuantity * productPrice);
+        discountResult += (remainOrderProductQuantity * productPrice);
+        products.updateProductQuantity(orderProductName, remainOrderProductQuantity);
+    }
+
     public void YBasicPayment(String orderProductName, int remainOrderProductQuantity) {
         Integer productPrice = products.findApplicablePrice(orderProductName);
 
@@ -95,8 +104,8 @@ public class PaymentSystem {
         return promotions.isPromotionsApplicable(productPromotion, currentDate);
     }
 
-    public boolean isOrderProductQuantity(int orderProductQuantity) {
-        return orderProductQuantity > 0;
+    public boolean isOrderProductQuantity(int orderProductQuantity, int requiredBuyQuantity) {
+        return orderProductQuantity > 0 && orderProductQuantity > requiredBuyQuantity;
     }
 
     public boolean isEligibleForFreePromotion(int orderProductQuantity,
@@ -104,7 +113,7 @@ public class PaymentSystem {
                                               int requiredBuyQuantity,
                                               int promotionFreeQuantity) {
         return orderProductQuantity < requiredBuyQuantity + promotionFreeQuantity
-                && orderProductQuantity == requiredBuyQuantity
+                && orderProductQuantity >= requiredBuyQuantity
                 && productQuantity != orderProductQuantity;
     }
 

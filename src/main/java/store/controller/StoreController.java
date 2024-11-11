@@ -75,8 +75,7 @@ public class StoreController {
                 if (!Objects.equals(applicablePromotion, "") && productQuantity.equals("재고 없음")) {
                     isPromotionApplicable = false;
                 } else {
-                    handlePromotionalProduct(orderProduct, products, promotions, paymentSystem, productName,
-                            remainingQuantity);
+                    handlePromotionalProduct(orderProduct, products, promotions, paymentSystem, productName);
                 }
             }
 
@@ -92,38 +91,38 @@ public class StoreController {
 
     private void handlePromotionalProduct(OrderProduct orderProduct, Products products, Promotions promotions,
                                           PaymentSystem paymentSystem,
-                                          String productName, int remainingQuantity) {
-        int orderQuantity = orderProduct.getOrderProductQuantity(productName);
+                                          String productName) {
         String promotion = products.findApplicablePromotion(productName);
         int requiredBuyQuantity = promotions.getPromotionBuyRequirement(promotion);
         int freeQuantity = promotions.getPromotionFreeQuantity(promotion);
         int productQuantity = ParseUtil.parseInt(products.getProductQuantity(productName));
 
-        if (paymentSystem.isEligibleForFreePromotion(orderQuantity, productQuantity, requiredBuyQuantity,
+        int updatedQuantity = paymentSystem.applyPromotionPayment(productName);
+
+        if (paymentSystem.isEligibleForFreePromotion(updatedQuantity, productQuantity, requiredBuyQuantity,
                 freeQuantity)) {
             String userFreePromotionChoice =
                     RetryUtil.freePromotionChoice(inputView, outputView, productName);
             if (userFreePromotionChoice.equals("Y")) {
-                paymentSystem.YFreePromotionPayment(productName, remainingQuantity, freeQuantity);
+                paymentSystem.YFreePromotionPayment(productName, updatedQuantity, freeQuantity);
             }
 
             if (userFreePromotionChoice.equals("N")) {
-                paymentSystem.NFreePromotionPayment(productName, remainingQuantity);
+                paymentSystem.NFreePromotionPayment(productName, updatedQuantity);
             }
         }
 
-        if (!paymentSystem.isEligibleForFreePromotion(orderQuantity, productQuantity, requiredBuyQuantity,
+        if (!paymentSystem.isEligibleForFreePromotion(updatedQuantity, productQuantity, requiredBuyQuantity,
                 freeQuantity)) {
-            applyPromotionDiscount(orderProduct, paymentSystem, productName);
+            applyPromotionDiscount(orderProduct, paymentSystem, productName, updatedQuantity, requiredBuyQuantity);
         }
     }
 
-    private void applyPromotionDiscount(OrderProduct orderProduct, PaymentSystem paymentSystem,
-                                        String productName) {
+    private void applyPromotionDiscount(OrderProduct orderProduct, PaymentSystem paymentSystem, String productName,
+                                        int updatedQuantity, int requiredBuyQuantity) {
         int orderProductQuantity = orderProduct.getOrderProductQuantity(productName);
-        int updatedQuantity = paymentSystem.applyPromotionPayment(productName);
 
-        if (paymentSystem.isOrderProductQuantity(updatedQuantity)) {
+        if (paymentSystem.isOrderProductQuantity(updatedQuantity, requiredBuyQuantity)) {
             String userConfirmNonPromotionalPurchase =
                     RetryUtil.confirmNonPromotionalPurchase(inputView, outputView, productName, updatedQuantity);
             if (userConfirmNonPromotionalPurchase.equals("Y")) {
@@ -133,6 +132,10 @@ public class StoreController {
             if (userConfirmNonPromotionalPurchase.equals("N")) {
                 paymentSystem.NBasicPayment(productName, orderProductQuantity, updatedQuantity);
             }
+        }
+
+        if (!paymentSystem.isOrderProductQuantity(updatedQuantity, requiredBuyQuantity)) {
+            paymentSystem.basicPayment(productName, updatedQuantity);
         }
 
     }
