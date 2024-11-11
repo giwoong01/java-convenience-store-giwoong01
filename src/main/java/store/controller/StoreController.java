@@ -102,7 +102,7 @@ public class StoreController {
         if (paymentSystem.isEligibleForFreePromotion(orderQuantity, productQuantity, requiredBuyQuantity,
                 freeQuantity)) {
             String userFreePromotionChoice =
-                    RetryUtil.freePromotionChoice(inputView, outputView, productName, freeQuantity);
+                    RetryUtil.freePromotionChoice(inputView, outputView, productName);
             if (userFreePromotionChoice.equals("Y")) {
                 paymentSystem.YFreePromotionPayment(productName, remainingQuantity, freeQuantity);
             }

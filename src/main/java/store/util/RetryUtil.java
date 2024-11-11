@@ -19,15 +19,14 @@ public class RetryUtil {
 
     public static String freePromotionChoice(InputView inputView,
                                              OutputView outputView,
-                                             String orderProductName,
-                                             int promotionFreeQuantity) {
+                                             String orderProductName) {
         try {
-            String input = inputView.inputFreePromotionChoice(orderProductName, promotionFreeQuantity);
+            String input = inputView.inputFreePromotionChoice(orderProductName);
             InputValidator.validateYesNoInput(input);
             return input;
         } catch (IllegalArgumentException e) {
             outputView.printErrorMessage(e.getMessage());
-            return freePromotionChoice(inputView, outputView, orderProductName, promotionFreeQuantity);
+            return freePromotionChoice(inputView, outputView, orderProductName);
         }
     }
 
