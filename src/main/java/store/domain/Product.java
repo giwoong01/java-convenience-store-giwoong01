@@ -22,6 +22,10 @@ public class Product {
             promotion = "";
         }
 
+        if (Objects.equals(quantity, "0")) {
+            quantity = "재고 없음";
+        }
+
         return new Product(
                 name,
                 ParseUtil.parseInt(price),
