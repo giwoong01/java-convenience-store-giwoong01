@@ -31,6 +31,10 @@ public class ParseUtil {
         String quantity = lineSplit[2].trim();
         String promotion = lineSplit[3].trim();
 
+        if (!quantity.equals("재고 없음") && ParseUtil.parseInt(quantity) < 0) {
+            throw new IllegalArgumentException("[ERROR] 상품의 재고는 음수가 될 수 없습니다.");
+        }
+
         return Product.createProduct(name, price, quantity, promotion);
     }
 
