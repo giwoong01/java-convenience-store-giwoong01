@@ -3,9 +3,11 @@ package store.util;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import store.domain.OrderProduct;
 import store.domain.Product;
 import store.domain.Products;
@@ -36,12 +38,19 @@ public class ParseUtil {
         String[] inputSplit = input.split(",", -1);
 
         List<String[]> orderProductDetails = new ArrayList<>();
+        Set<String> productNames = new HashSet<>();
+
         for (String item : inputSplit) {
             if (!item.matches("^\\[[^\\[\\]]+-\\d+]$")) {
                 throw new IllegalArgumentException("[ERROR] 올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요.");
             }
 
             String[] productDetails = item.replaceAll("[\\[\\]]", "").split("-", 2);
+
+            if (!productNames.add(productDetails[0])) {
+                throw new IllegalArgumentException("[ERROR] 잘못된 입력입니다. 다시 입력해 주세요.");
+            }
+
             orderProductDetails.add(productDetails);
         }
 
@@ -62,7 +71,7 @@ public class ParseUtil {
         String productName = productNameAndQuantity[0];
         int quantity = Integer.parseInt(productNameAndQuantity[1]);
 
-        productNamesAndQuantity.merge(productName, quantity, Integer::sum);
+        productNamesAndQuantity.put(productName, quantity);
     }
 
     public static Promotion parsePromotionFromLine(String line) {
