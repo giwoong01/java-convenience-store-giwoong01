@@ -22,7 +22,7 @@ public class ParseUtil {
     }
 
     public static Product parseProductFromLine(String line) {
-        String[] lineSplit = line.split(",");
+        String[] lineSplit = line.split(",", -1);
 
         String name = lineSplit[0].trim();
         String price = lineSplit[1].trim();
@@ -66,7 +66,7 @@ public class ParseUtil {
     }
 
     public static Promotion parsePromotionFromLine(String line) {
-        String[] lineSplit = line.split(",");
+        String[] lineSplit = line.split(",", -1);
 
         String name = lineSplit[0].trim();
         int buy = parseInt(lineSplit[1].trim());
