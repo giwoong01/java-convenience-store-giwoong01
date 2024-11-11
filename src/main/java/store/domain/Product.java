@@ -31,14 +31,12 @@ public class Product {
     }
 
     public void updateQuantity(int quantityToSubtract) {
-        int tmpQuantity = ParseUtil.parseInt(this.quantity);
-        tmpQuantity -= quantityToSubtract;
-        if (tmpQuantity <= 0) {
+        if (quantityToSubtract <= 0) {
             this.quantity = "재고 없음";
             return;
         }
 
-        this.quantity = Integer.toString(tmpQuantity);
+        this.quantity = Integer.toString(quantityToSubtract);
     }
 
     public String getName() {

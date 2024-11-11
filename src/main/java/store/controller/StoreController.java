@@ -5,6 +5,7 @@ import camp.nextstep.edu.missionutils.DateTimes;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import store.domain.OrderProduct;
 import store.domain.PaymentSystem;
 import store.domain.Products;
@@ -65,12 +66,21 @@ public class StoreController {
         for (String productName : orderProductNames) {
             int remainingQuantity = orderProduct.getOrderProductQuantity(productName);
 
-            if (paymentSystem.isPromotionsApplicable(productName, currentDate)) {
-                handlePromotionalProduct(orderProduct, products, promotions, paymentSystem, productName,
-                        remainingQuantity);
+            boolean isPromotionApplicable = paymentSystem.isPromotionsApplicable(productName, currentDate);
+
+            if (isPromotionApplicable) {
+                String applicablePromotion = products.findApplicablePromotion(productName);
+                String productQuantity = products.getProductQuantity(productName);
+
+                if (!Objects.equals(applicablePromotion, "") && productQuantity.equals("재고 없음")) {
+                    isPromotionApplicable = false;
+                } else {
+                    handlePromotionalProduct(orderProduct, products, promotions, paymentSystem, productName,
+                            remainingQuantity);
+                }
             }
 
-            if (!paymentSystem.isPromotionsApplicable(productName, currentDate)) {
+            if (!isPromotionApplicable) {
                 handleNonPromotionalProduct(paymentSystem, productName, remainingQuantity);
             }
         }
@@ -78,6 +88,7 @@ public class StoreController {
         BigDecimal membershipDiscount = applyMembershipDiscountIfEligible(paymentSystem);
         printReceipt(orderProduct, products, paymentSystem, membershipDiscount);
     }
+
 
     private void handlePromotionalProduct(OrderProduct orderProduct, Products products, Promotions promotions,
                                           PaymentSystem paymentSystem,
@@ -99,7 +110,6 @@ public class StoreController {
             if (userFreePromotionChoice.equalsIgnoreCase("N")) {
                 paymentSystem.NFreePromotionPayment(productName, remainingQuantity);
             }
-
         }
 
         if (!paymentSystem.isEligibleForFreePromotion(orderQuantity, productQuantity, requiredBuyQuantity,
