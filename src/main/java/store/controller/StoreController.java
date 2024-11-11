@@ -103,11 +103,11 @@ public class StoreController {
                 freeQuantity)) {
             String userFreePromotionChoice =
                     RetryUtil.freePromotionChoice(inputView, outputView, productName, freeQuantity);
-            if (userFreePromotionChoice.equalsIgnoreCase("Y")) {
+            if (userFreePromotionChoice.equals("Y")) {
                 paymentSystem.YFreePromotionPayment(productName, remainingQuantity, freeQuantity);
             }
 
-            if (userFreePromotionChoice.equalsIgnoreCase("N")) {
+            if (userFreePromotionChoice.equals("N")) {
                 paymentSystem.NFreePromotionPayment(productName, remainingQuantity);
             }
         }
@@ -126,11 +126,11 @@ public class StoreController {
         if (paymentSystem.isOrderProductQuantity(updatedQuantity)) {
             String userConfirmNonPromotionalPurchase =
                     RetryUtil.confirmNonPromotionalPurchase(inputView, outputView, productName, updatedQuantity);
-            if (userConfirmNonPromotionalPurchase.equalsIgnoreCase("Y")) {
+            if (userConfirmNonPromotionalPurchase.equals("Y")) {
                 paymentSystem.YBasicPayment(productName, updatedQuantity);
             }
 
-            if (userConfirmNonPromotionalPurchase.equalsIgnoreCase("N")) {
+            if (userConfirmNonPromotionalPurchase.equals("N")) {
                 paymentSystem.NBasicPayment(productName, orderProductQuantity, updatedQuantity);
             }
         }
@@ -143,7 +143,7 @@ public class StoreController {
 
     private BigDecimal applyMembershipDiscountIfEligible(PaymentSystem paymentSystem) {
         String userMembershipDiscountChoice = RetryUtil.membershipDiscountChoice(inputView, outputView);
-        if (userMembershipDiscountChoice.equalsIgnoreCase("Y")) {
+        if (userMembershipDiscountChoice.equals("Y")) {
             return paymentSystem.applyMembershipDiscount();
         }
         return BigDecimal.ZERO;
